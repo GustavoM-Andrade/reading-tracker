@@ -1,0 +1,14 @@
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Delivery 2 – H2 database files (root folder only).
+# The leading slash matters: "data/" without it would also ignore frontend/data/seed.json.
+/data/
+
+# Delivery 2 – Maven / Gradle build output
+target/
+build/
+.gradle/
