@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minha Biblioteca — Gerenciador de Leitura</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>" />
+</head>
+<body>
+  <div class="app-shell">
+
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar__brand">
+        <span class="sidebar__logo">📚</span>
+        <div class="sidebar__brand-text">
+          <h1>Minha Biblioteca</h1>
+          <p>Seu acervo pessoal</p>
+        </div>
+      </div>
+
+      <nav class="sidebar__nav">
+        <a href="#" class="nav-item active" data-view="dashboard">
+          <span class="nav-item__icon">📊</span><span class="nav-item__label">Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" data-view="reading">
+          <span class="nav-item__icon">📖</span><span class="nav-item__label">Leitura Atual</span>
+        </a>
+        <a href="#" class="nav-item" data-view="library">
+          <span class="nav-item__icon">🗄️</span><span class="nav-item__label">Minha Biblioteca</span>
+        </a>
+        <a href="#" class="nav-item" data-view="wishlist">
+          <span class="nav-item__icon">⭐</span><span class="nav-item__label">Lista de Desejos</span>
+        </a>
+      </nav>
+
+      <div class="sidebar__footer">
+        <button class="btn btn--primary btn--block" id="btnAddBook">
+          <span>＋</span> Adicionar Livro
+        </button>
+        <button class="btn btn--ghost btn--block" id="btnResetData" title="Restaura os dados fictícios de demonstração">
+          ↺ Restaurar dados demo
+        </button>
+      </div>
+    </aside>
+
+    <!-- ============ MAIN ============ -->
+    <main class="main">
+      <header class="topbar">
+        <button class="icon-btn sidebar-toggle" id="sidebarToggle" aria-label="Menu">☰</button>
+        <div class="topbar__search">
+          <span class="topbar__search-icon">🔍</span>
+          <input type="text" id="globalSearch" placeholder="Buscar por título ou autor..." />
+        </div>
+        <div class="topbar__title" id="topbarTitle">Dashboard</div>
+      </header>
+
+      <section class="content">
+
+        <!-- ===== DASHBOARD VIEW ===== -->
+        <div class="view" id="view-dashboard">
+          <div class="stats-grid" id="statsGrid"><!-- JS --></div>
+
+          <div class="panel-row">
+            <div class="panel">
+              <div class="panel__head"><h3>Hábitos de Leitura</h3><p>Progresso de páginas lidas por mês</p></div>
+              <div class="panel__body" id="chartReadingTrend"></div>
+            </div>
+            <div class="panel">
+              <div class="panel__head"><h3>Status do Acervo</h3><p>Distribuição dos seus livros</p></div>
+              <div class="panel__body" id="chartStatus"></div>
+            </div>
+          </div>
+
+          <div class="panel-row">
+            <div class="panel">
+              <div class="panel__head"><h3>Livros por Gênero</h3><p>Quantidade em cada categoria</p></div>
+              <div class="panel__body" id="chartGenre"></div>
+            </div>
+            <div class="panel">
+              <div class="panel__head"><h3>Avaliações</h3><p>Distribuição das notas (1 a 5)</p></div>
+              <div class="panel__body" id="chartRatings"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel__head"><h3>Progresso Geral de Leitura</h3><p>Percentual total de páginas concluídas no acervo</p></div>
+            <div class="panel__body" id="overallProgress"></div>
+          </div>
+        </div>
+
+        <!-- ===== READING VIEW ===== -->
+        <div class="view" id="view-reading">
+          <div class="view__empty" id="readingEmpty" hidden>
+            <span class="view__empty-icon">📖</span>
+            <h3>Nenhum livro em leitura no momento</h3>
+            <p>Marque um livro como "Lendo" na sua biblioteca ou adicione um novo para começar.</p>
+            <button class="btn btn--primary" data-go="library">Ver minha biblioteca</button>
+          </div>
+          <div class="reading-grid" id="readingGrid"><!-- JS --></div>
+        </div>
+
+        <!-- ===== LIBRARY VIEW ===== -->
+        <div class="view" id="view-library">
+          <div class="filters-bar">
+            <div class="filters-bar__row">
+              <select id="filterStatus" class="select"><option value="">Status: Todos</option><option value="nao-iniciado">Não iniciado</option><option value="lendo">Lendo</option><option value="concluido">Concluído</option><option value="abandonado">Abandonado</option></select>
+              <select id="filterGenre" class="select"><option value="">Gênero: Todos</option></select>
+              <select id="filterAuthor" class="select"><option value="">Autor: Todos</option></select>
+              <select id="filterRating" class="select"><option value="">Avaliação: Todas</option><option value="5">5 estrelas</option><option value="4">4 estrelas</option><option value="3">3 estrelas</option><option value="2">2 estrelas</option><option value="1">1 estrela</option></select>
+              <select id="filterYear" class="select"><option value="">Ano de conclusão: Todos</option></select>
+              <select id="filterPages" class="select"><option value="">Páginas: Todas</option><option value="0-200">Até 200</option><option value="201-400">201–400</option><option value="401-600">401–600</option><option value="601-999999">Mais de 600</option></select>
+              <select id="sortBy" class="select">
+                <option value="recent">Ordenar: Mais recentes</option>
+                <option value="title">Título (A–Z)</option>
+                <option value="author">Autor (A–Z)</option>
+                <option value="progress">Maior progresso</option>
+                <option value="rating">Melhor avaliação</option>
+                <option value="finishDate">Data de conclusão</option>
+              </select>
+              <button class="btn btn--ghost" id="clearFilters">Limpar filtros</button>
+            </div>
+            <div class="filters-bar__count" id="libraryCount"></div>
+          </div>
+          <div class="view__empty" id="libraryEmpty" hidden>
+            <span class="view__empty-icon">🗄️</span>
+            <h3>Nenhum livro encontrado</h3>
+            <p>Ajuste os filtros ou cadastre um novo livro.</p>
+          </div>
+          <div class="books-grid" id="libraryGrid"><!-- JS --></div>
+        </div>
+
+        <!-- ===== WISHLIST VIEW ===== -->
+        <div class="view" id="view-wishlist">
+          <div class="filters-bar filters-bar--simple">
+            <select id="wishPriority" class="select"><option value="">Prioridade: Todas</option><option value="alta">Alta</option><option value="media">Média</option><option value="baixa">Baixa</option></select>
+            <select id="wishGenre" class="select"><option value="">Gênero: Todos</option></select>
+            <div class="filters-bar__count" id="wishCount"></div>
+          </div>
+          <div class="view__empty" id="wishEmpty" hidden>
+            <span class="view__empty-icon">⭐</span>
+            <h3>Sua lista de desejos está vazia</h3>
+            <p>Adicione livros que você pretende ler futuramente.</p>
+            <button class="btn btn--primary" id="btnAddWish">Adicionar à lista de desejos</button>
+          </div>
+          <div class="books-grid books-grid--wishlist" id="wishGrid"><!-- JS --></div>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <!-- ============ MODAL (Add/Edit Book) ============ -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modal">
+      <div class="modal__head">
+        <h2 id="modalTitle">Adicionar Livro</h2>
+        <button class="icon-btn" id="modalClose" aria-label="Fechar">✕</button>
+      </div>
+      <form class="modal__form" id="bookForm" novalidate>
+        <input type="hidden" id="f_id" />
+
+        <div class="form-tabs" id="formTabs">
+          <button type="button" class="form-tab active" data-tab="library">📚 Biblioteca</button>
+          <button type="button" class="form-tab" data-tab="wishlist">⭐ Lista de Desejos</button>
+        </div>
+        <input type="hidden" id="f_collection" value="library" />
+
+        <div class="form-grid">
+          <div class="field field--full">
+            <label for="f_title">Título <span class="req">*</span></label>
+            <input type="text" id="f_title" maxlength="120" required />
+            <small class="field__error" data-for="f_title"></small>
+          </div>
+
+          <div class="field">
+            <label for="f_author">Autor <span class="req">*</span></label>
+            <input type="text" id="f_author" maxlength="80" required />
+            <small class="field__error" data-for="f_author"></small>
+          </div>
+
+          <div class="field">
+            <label for="f_publisher">Editora</label>
+            <input type="text" id="f_publisher" maxlength="80" />
+          </div>
+
+          <div class="field">
+            <label for="f_genre">Gênero <span class="req">*</span></label>
+            <input type="text" id="f_genre" list="genreList" required />
+            <datalist id="genreList"></datalist>
+            <small class="field__error" data-for="f_genre"></small>
+          </div>
+
+          <div class="field">
+            <label for="f_isbn">ISBN</label>
+            <input type="text" id="f_isbn" maxlength="20" placeholder="Opcional" />
+          </div>
+
+          <div class="field">
+            <label for="f_totalPages">Total de páginas <span class="req">*</span></label>
+            <input type="number" id="f_totalPages" min="1" step="1" required />
+            <small class="field__error" data-for="f_totalPages"></small>
+          </div>
+
+          <div class="field" id="fieldCurrentPage">
+            <label for="f_currentPage">Página atual</label>
+            <input type="number" id="f_currentPage" min="0" step="1" value="0" />
+            <small class="field__error" data-for="f_currentPage"></small>
+          </div>
+
+          <div class="field">
+            <label for="f_status">Status</label>
+            <select id="f_status">
+              <option value="nao-iniciado">Não iniciado</option>
+              <option value="lendo">Lendo</option>
+              <option value="concluido">Concluído</option>
+              <option value="abandonado">Abandonado</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="f_startDate">Data de início</label>
+            <input type="date" id="f_startDate" />
+          </div>
+
+          <div class="field">
+            <label for="f_finishDate">Data de conclusão</label>
+            <input type="date" id="f_finishDate" />
+          </div>
+
+          <div class="field field--full">
+            <label for="f_cover">URL da capa</label>
+            <input type="url" id="f_cover" placeholder="https://... (deixe vazio para gerar uma capa)" />
+          </div>
+
+          <div class="field" id="fieldRating">
+            <label>Avaliação</label>
+            <div class="rating-input" id="ratingInput">
+              <button type="button" data-val="1">★</button>
+              <button type="button" data-val="2">★</button>
+              <button type="button" data-val="3">★</button>
+              <button type="button" data-val="4">★</button>
+              <button type="button" data-val="5">★</button>
+            </div>
+            <input type="hidden" id="f_rating" value="0" />
+          </div>
+
+          <div class="field" id="fieldPriority">
+            <label for="f_priority">Prioridade de leitura</label>
+            <select id="f_priority">
+              <option value="alta">Alta</option>
+              <option value="media">Média</option>
+              <option value="baixa">Baixa</option>
+            </select>
+          </div>
+
+          <div class="field field--full">
+            <label for="f_review">Comentário / Resenha</label>
+            <textarea id="f_review" rows="3" maxlength="1000" placeholder="Sua opinião sobre o livro..."></textarea>
+          </div>
+
+          <div class="field field--full" id="fieldNotes">
+            <label for="f_notes">Observações pessoais</label>
+            <textarea id="f_notes" rows="2" maxlength="500" placeholder="Por que quero ler este livro?"></textarea>
+          </div>
+        </div>
+
+        <div class="modal__foot">
+          <button type="button" class="btn btn--ghost" id="modalCancel">Cancelar</button>
+          <button type="submit" class="btn btn--primary" id="modalSave">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============ CONFIRM MODAL ============ -->
+  <div class="modal-overlay" id="confirmOverlay">
+    <div class="modal modal--sm">
+      <div class="modal__head"><h2 id="confirmTitle">Confirmar</h2></div>
+      <p class="confirm__msg" id="confirmMsg"></p>
+      <div class="modal__foot">
+        <button class="btn btn--ghost" id="confirmCancel">Cancelar</button>
+        <button class="btn btn--danger" id="confirmOk">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TOAST ============ -->
+  <div class="toast" id="toast"></div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/reading.js"></script>
+  <script src="js/library.js"></script>
+  <script src="js/wishlist.js"></script>
+  <script src="js/modal.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
