@@ -14,6 +14,7 @@ App.Main = (function () {
   /* ---------------- Estado ---------------- */
   const state = {
     books: [],
+    database: null,
     view: 'dashboard',
     globalSearch: '',
     todayISO: U.todayISO()
@@ -361,7 +362,8 @@ App.Main = (function () {
   }
 
   /* ---------------- Inicialização ---------------- */
-  function init() {
+  async function init() {
+    state.database = await App.Store.initialize();
     loadBooks();
     populateGenreDatalist();
     bindEvents();
